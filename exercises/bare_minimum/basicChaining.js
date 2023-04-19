@@ -10,11 +10,38 @@
 
 var fs = require('fs');
 var Promise = require('bluebird');
+var promisification = require('./promisification.js')
 
 
 
 var fetchProfileAndWriteToFile = function(readFilePath, writeFilePath) {
   // TODO
+  var newReadFilePath = function (readFilePath) {
+    return new Promise((resolve, reject)=> {
+        fs.readFile(filePath, ((err, data)=> {
+          if(err){
+            reject(err)
+          } else {
+            resolve(filePath);
+          }
+        }))
+    })
+  }
+  var newWriteToFile = function (writeFilePath) {
+    return new Promise((resolve, reject)=> {
+      fs.writeFile(filePath, ((err, data)=> {
+        if(err){
+          reject(err)
+        } else {
+          resolve(filePath);
+        }
+      }))
+  })
+  }
+  var result = newReadFilePath().then(newWriteToFile())
+  return result
+  // .then (Promise.promisify(writeFilePath))
+
 };
 
 // Export these functions so we can test them
